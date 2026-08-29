@@ -1,8 +1,8 @@
 package com.tripplanner.citybreak.entity;
 
 public enum TripStatus {
-    VISITED,
-    PLANNED;
+    PLANNED,
+    VISITED;
 
     public static TripStatus from(String value){
         try {

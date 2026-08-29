@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class TripService {
 
-    public final TripRepository tripRepository;
-    public final CityRepository cityRepository;
-    public final UserRepository userRepository;
+    private final TripRepository tripRepository;
+    private final CityRepository cityRepository;
+    private final UserRepository userRepository;
 
     public TripService(TripRepository tripRepository, CityRepository cityRepository, UserRepository userRepository) {
         this.tripRepository = tripRepository;
