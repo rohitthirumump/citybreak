@@ -11,6 +11,7 @@ import com.tripplanner.citybreak.repository.TripRepository;
 import com.tripplanner.citybreak.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -32,9 +33,7 @@ public class TripService {
 
         City city = resolveCity(request.getCityName(), request.getCountry());
 
-        if(request.getStartDate().isAfter(request.getEndDate())){
-            throw new IllegalStateException("Start Date cannot before end Date");
-        }
+        validateDates(request.getStartDate(),request.getEndDate());
 
         Trip trip = new Trip();
         trip.setUser(user);
@@ -63,9 +62,7 @@ public class TripService {
 
         City city = resolveCity(request.getCityName(), request.getCountry());
 
-        if(request.getStartDate().isAfter(request.getEndDate())){
-            throw new IllegalStateException("Start Date cannot before end Date");
-        }
+        validateDates(request.getStartDate(),request.getEndDate());
 
         trip.setCity(city);
         trip.setDescription(request.getDescription());
@@ -103,6 +100,12 @@ public class TripService {
         return cityRepository.findByCityNameAndCountry(
                 cityName, country).orElseGet(() -> cityRepository.save(
                 new City(null,cityName,country)));
+    }
+
+    private void validateDates(LocalDate startDate, LocalDate endDate) {
+        if (endDate != null && startDate.isAfter(endDate)) {
+            throw new IllegalArgumentException("startDate cannot be after endDate");
+        }
     }
 
     private TripResponse toResponse(Trip trip){
