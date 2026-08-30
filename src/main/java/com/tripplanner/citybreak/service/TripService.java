@@ -30,9 +30,11 @@ public class TripService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new IllegalStateException("User does not exist " + userId));
 
-        City city = cityRepository.findByCityNameAndCountry(
-                request.getCityName(), request.getCountry()).orElseGet(() -> cityRepository.save(
-                        new City(null,request.getCityName(),request.getCountry())));
+        City city = resolveCity(request.getCityName(), request.getCountry());
+
+        if(request.getStartDate().isAfter(request.getEndDate())){
+            throw new IllegalStateException("Start Date cannot before end Date");
+        }
 
         Trip trip = new Trip();
         trip.setUser(user);
@@ -56,17 +58,15 @@ public class TripService {
     }
 
     public TripResponse updateTrip(Long tripId, Long userId,TripRequest request){
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new IllegalStateException("User does not exist " + userId));
-
-        City city = cityRepository.findByCityNameAndCountry(
-                request.getCityName(), request.getCountry()).orElseGet(() -> cityRepository.save(
-                new City(null,request.getCityName(),request.getCountry())));
-
         Trip trip = tripRepository.findByIdAndUserId(tripId,userId).orElseThrow(
                 () -> new IllegalArgumentException("Trip not found for " + tripId));
 
-        trip.setUser(user);
+        City city = resolveCity(request.getCityName(), request.getCountry());
+
+        if(request.getStartDate().isAfter(request.getEndDate())){
+            throw new IllegalStateException("Start Date cannot before end Date");
+        }
+
         trip.setCity(city);
         trip.setDescription(request.getDescription());
         trip.setStatus(request.getStatus());
@@ -97,6 +97,12 @@ public class TripService {
         return tripRepository.findByUserIdAndStatus(userId,status).stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+    private City resolveCity(String cityName, String country){
+        return cityRepository.findByCityNameAndCountry(
+                cityName, country).orElseGet(() -> cityRepository.save(
+                new City(null,cityName,country)));
     }
 
     private TripResponse toResponse(Trip trip){
