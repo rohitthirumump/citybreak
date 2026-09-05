@@ -6,6 +6,8 @@ import com.tripplanner.citybreak.entity.City;
 import com.tripplanner.citybreak.entity.Trip;
 import com.tripplanner.citybreak.entity.TripStatus;
 import com.tripplanner.citybreak.entity.User;
+import com.tripplanner.citybreak.exception.ConflictException;
+import com.tripplanner.citybreak.exception.ResourceNotFoundException;
 import com.tripplanner.citybreak.repository.CityRepository;
 import com.tripplanner.citybreak.repository.TripRepository;
 import com.tripplanner.citybreak.repository.UserRepository;
@@ -29,7 +31,7 @@ public class TripService {
 
     public TripResponse createTrip(Long userId,TripRequest request){
         User user = userRepository.findById(userId).orElseThrow(
-                () -> new IllegalStateException("User does not exist " + userId));
+                () -> new ResourceNotFoundException("User does not exist " + userId));
 
         City city = resolveCity(request.getCityName(), request.getCountry());
 
@@ -51,14 +53,14 @@ public class TripService {
 
     public void deleteTrip(Long tripId,Long userId){
         Trip trip = tripRepository.findByIdAndUserId(tripId,userId).orElseThrow(
-                () -> new IllegalArgumentException("Trip not found for " + tripId));
+                () -> new ResourceNotFoundException("Trip not found for " + tripId));
 
         tripRepository.delete(trip);
     }
 
     public TripResponse updateTrip(Long tripId, Long userId,TripRequest request){
         Trip trip = tripRepository.findByIdAndUserId(tripId,userId).orElseThrow(
-                () -> new IllegalArgumentException("Trip not found for " + tripId));
+                () -> new ResourceNotFoundException("Trip not found for " + tripId));
 
         City city = resolveCity(request.getCityName(), request.getCountry());
 
@@ -84,7 +86,7 @@ public class TripService {
 
     public TripResponse getTrip(Long userId,Long tripId){
         Trip trip = tripRepository.findByIdAndUserId(tripId,userId).orElseThrow(
-                () -> new IllegalArgumentException("Trip does not exist for " + tripId));
+                () -> new ResourceNotFoundException("Trip does not exist for " + tripId));
 
         return toResponse(trip);
 
@@ -104,7 +106,7 @@ public class TripService {
 
     private void validateDates(LocalDate startDate, LocalDate endDate) {
         if (endDate != null && startDate.isAfter(endDate)) {
-            throw new IllegalArgumentException("startDate cannot be after endDate");
+            throw new ConflictException("startDate cannot be after endDate");
         }
     }
 

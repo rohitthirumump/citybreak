@@ -5,6 +5,7 @@ import com.tripplanner.citybreak.dto.LoginResponse;
 import com.tripplanner.citybreak.dto.RegisterRequest;
 import com.tripplanner.citybreak.dto.UserResponse;
 import com.tripplanner.citybreak.entity.User;
+import com.tripplanner.citybreak.exception.ConflictException;
 import com.tripplanner.citybreak.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class UserService {
 
     public UserResponse register(RegisterRequest request){
         if(userRepository.existsByEmail(request.getEmail())){
-            throw new IllegalStateException("Email Already Registered");
+            throw new ConflictException("Email Already Registered");
         }
 
         User user = new User();
@@ -38,10 +39,10 @@ public class UserService {
 
     public LoginResponse login(LoginRequest request){
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow(
-                () -> new IllegalStateException("Invalid Email or Password"));
+                () -> new ConflictException("Invalid Email or Password"));
 
         if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
-            throw new IllegalStateException("Invalid Email or Password");
+            throw new ConflictException("Invalid Email or Password");
         }
 
         return new LoginResponse(user.getEmail(), user.getFullName());
