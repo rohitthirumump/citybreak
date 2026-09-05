@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: citybreak-postgres
+    environment:
+      POSTGRES_DB: citybreak
+      POSTGRES_USER: citybreak
+      POSTGRES_PASSWORD: citybreak
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
