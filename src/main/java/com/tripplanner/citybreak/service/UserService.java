@@ -5,6 +5,7 @@ import com.tripplanner.citybreak.dto.LoginResponse;
 import com.tripplanner.citybreak.dto.RegisterRequest;
 import com.tripplanner.citybreak.dto.UserResponse;
 import com.tripplanner.citybreak.entity.User;
+import com.tripplanner.citybreak.exception.AuthenticationFailedException;
 import com.tripplanner.citybreak.exception.ConflictException;
 import com.tripplanner.citybreak.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,10 +40,10 @@ public class UserService {
 
     public LoginResponse login(LoginRequest request){
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow(
-                () -> new ConflictException("Invalid Email or Password"));
+                () -> new AuthenticationFailedException("Invalid Email or Password"));
 
         if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
-            throw new ConflictException("Invalid Email or Password");
+            throw new AuthenticationFailedException("Invalid Email or Password");
         }
 
         return new LoginResponse(user.getEmail(), user.getFullName());

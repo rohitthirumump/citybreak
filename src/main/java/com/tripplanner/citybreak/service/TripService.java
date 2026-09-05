@@ -106,7 +106,7 @@ public class TripService {
 
     private void validateDates(LocalDate startDate, LocalDate endDate) {
         if (endDate != null && startDate.isAfter(endDate)) {
-            throw new ConflictException("startDate cannot be after endDate");
+            throw new IllegalArgumentException("startDate cannot be after endDate");
         }
     }
 
