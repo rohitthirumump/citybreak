@@ -8,6 +8,7 @@ import com.tripplanner.citybreak.entity.User;
 import com.tripplanner.citybreak.exception.AuthenticationFailedException;
 import com.tripplanner.citybreak.exception.ConflictException;
 import com.tripplanner.citybreak.repository.UserRepository;
+import com.tripplanner.citybreak.security.JwtUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +17,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
     }
 
 
@@ -46,7 +49,9 @@ public class UserService {
             throw new AuthenticationFailedException("Invalid Email or Password");
         }
 
-        return new LoginResponse(user.getEmail(), user.getFullName());
+        String token = jwtUtil.generateToken(user.getId(), user.getEmail());
+
+        return new LoginResponse(user.getEmail(), user.getFullName(),token);
     }
 
 }

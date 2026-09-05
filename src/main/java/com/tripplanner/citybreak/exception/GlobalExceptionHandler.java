@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.UNAUTHORIZED.value(),
-                "Bad Request",
+                "Unauthorized",
                 ex.getMessage()
         );
 

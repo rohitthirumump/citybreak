@@ -3,10 +3,12 @@ package com.tripplanner.citybreak.controller;
 import com.tripplanner.citybreak.dto.TripRequest;
 import com.tripplanner.citybreak.dto.TripResponse;
 import com.tripplanner.citybreak.entity.TripStatus;
+import com.tripplanner.citybreak.security.AuthenticatedUser;
 import com.tripplanner.citybreak.service.TripService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,10 +25,10 @@ public class TripController {
 
     @PostMapping
     public ResponseEntity<TripResponse> createTrip(
-            @RequestParam Long userId,
+            @AuthenticationPrincipal AuthenticatedUser principal,
             @Valid @RequestBody TripRequest request){
 
-        TripResponse response = tripService.createTrip(userId,request);
+        TripResponse response = tripService.createTrip(principal.userId(), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
     }
@@ -34,34 +36,34 @@ public class TripController {
     @GetMapping("/{tripId}")
     public ResponseEntity<TripResponse> getTrip(
             @PathVariable Long tripId,
-            @RequestParam Long userId){
-        return ResponseEntity.ok(tripService.getTrip(userId, tripId));
+            @AuthenticationPrincipal AuthenticatedUser principal){
+        return ResponseEntity.ok(tripService.getTrip(principal.userId(), tripId));
     }
 
     @GetMapping
     public ResponseEntity<List<TripResponse>> getTrips(
-            @RequestParam Long userId,
+            @AuthenticationPrincipal AuthenticatedUser principal,
             @RequestParam(required = false) TripStatus status){
         List<TripResponse> tripResponses = (status != null) ?
-                tripService.getTripUsingStatus(userId, status) :
-                tripService.getAllTrips(userId);
+                tripService.getTripUsingStatus(principal.userId(), status) :
+                tripService.getAllTrips(principal.userId());
 
         return  ResponseEntity.ok(tripResponses);
     }
 
     @PutMapping("/{tripId}")
     public ResponseEntity<TripResponse> updateTrip(
-            @RequestParam Long userId,
+            @AuthenticationPrincipal AuthenticatedUser principal,
             @PathVariable Long tripId,
             @Valid @RequestBody TripRequest request){
-        return ResponseEntity.ok(tripService.updateTrip(tripId,userId,request));
+        return ResponseEntity.ok(tripService.updateTrip(tripId,principal.userId(),request));
     }
 
     @DeleteMapping("/{tripId}")
     public ResponseEntity<String> deleteTrip(
             @PathVariable Long tripId,
-            @RequestParam Long userId){
-        tripService.deleteTrip(tripId, userId);
+            @AuthenticationPrincipal AuthenticatedUser principal){
+        tripService.deleteTrip(tripId, principal.userId());
         return ResponseEntity.ok("Delete Successful");
     }
 }
