@@ -2,6 +2,7 @@ services:
   postgres:
     image: postgres:16
     container_name: citybreak-postgres
+    restart: unless-stopped
     environment:
       POSTGRES_DB: citybreak
       POSTGRES_USER: citybreak
@@ -14,6 +15,7 @@ services:
   user-db:
     image: postgres:16
     container_name: user-service-db
+    restart: unless-stopped
     environment:
       POSTGRES_DB: userdb
       POSTGRES_USER: userservice
@@ -23,6 +25,20 @@ services:
     volumes:
       - userdata:/var/lib/postgresql/data
 
+  trip-db:
+    image: postgres:16
+    container_name: trip-service-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: tripdb
+      POSTGRES_USER: tripservice
+      POSTGRES_PASSWORD: tripservice
+    ports:
+      - "5434:5432"
+    volumes:
+      - tripdata:/var/lib/postgresql/data
+
 volumes:
   pgdata:
   userdata:
+  tripdata:
