@@ -24,8 +24,6 @@ public class TripService {
     }
 
     public TripResponse createTrip(Long userId, TripRequest request){
-//        User user = userRepository.findById(userId).orElseThrow(
-//                () -> new ResourceNotFoundException("User does not exist " + userId));
 
         City city = resolveCity(request.getCityName(), request.getCountry());
 
