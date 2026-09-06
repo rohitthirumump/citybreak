@@ -11,5 +11,18 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  user-db:
+    image: postgres:16
+    container_name: user-service-db
+    environment:
+      POSTGRES_DB: userdb
+      POSTGRES_USER: userservice
+      POSTGRES_PASSWORD: userservice
+    ports:
+      - "5433:5432"
+    volumes:
+      - userdata:/var/lib/postgresql/data
+
 volumes:
   pgdata:
+  userdata:
