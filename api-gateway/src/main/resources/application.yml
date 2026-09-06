@@ -14,7 +14,7 @@ spring:
               predicates:
                 - Path=/api/users/**
             - id: trip-service
-              uri: lb://TRIP-SERVICE
+              uri: lb://trip-service
               predicates:
                 - Path=/api/trips/**
 
